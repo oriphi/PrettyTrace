@@ -58,8 +58,9 @@ class MenuItem():
 
     def printLine(self,content):
         sys.stdout.write(content + '\r\n')
+        sys.stdout.flush()
 
-    def repr2(self, prefix = "", start = 0, selected = 0, beg = 0, end = 0, parentSel = False):
+    def repr(self, prefix = "", start = 0, selected = 0, beg = 0, end = 0, parentSel = False):
         """
             prefix : indentation
             start : position of the first item of the menu
@@ -86,7 +87,7 @@ class MenuItem():
             return
         start += 1
         for i in self.sub:
-            i.repr2(prefix = prefix + "  ",
+            i.repr(prefix = prefix + "  ",
                 start = start,
                 selected = selected,
                 beg = beg,
@@ -96,24 +97,6 @@ class MenuItem():
             #self.printLine(prefix + "  len: {} -- Start: {}".format(i.length, start))
         return
 
-    def repr(self, prefix = "", start = 0, selected = 0,parentSel = False):
-        res = []
-        l = len(self)
-        if (start == selected) or (self.collapsed and start <= selected < start + l):
-            parentSel = True
-            res.append(prefix + self.selected.format(self.item))
-        else:
-            if(parentSel):
-                res.append(prefix + self.parentSelected.format(self.item))
-            else:
-                res.append(prefix + self.item)
-        if self.collapsed:
-            return res
-        start += 1
-        for i in self.sub:
-            res += i.repr(prefix + "  ", start, selected, parentSel = parentSel)
-            start += len(i)
-        return res
 
 class Menu():
     def __init__(self, items):
@@ -167,10 +150,9 @@ class Menu():
             f.write("beg: {} - end: {}\n".format(beg, end))
 
         for i in self.items:
-            i.repr2(prefix = "", start = k, selected = self.index,beg = beg, end = end, parentSel = False)
+            i.repr(prefix = "", start = k, selected = self.index,beg = beg, end = end, parentSel = False)
             k += len(i)
 
-        sys.stdout.flush()
 
     def mainloop(self):
         tty.setraw(sys.stdin)
